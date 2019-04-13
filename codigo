@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+    double funcao(double * c, double x) {
+        double fx = c[0] * cos(c[1] * x) + c[2] * sin(c[3] * x) + exp(c[4] * x) + c[5];
+        return fx;
+    }
+void raiz_bissecao(double *d, double *c, double *itc_dom, double *itc_img){
+   double h = d[11]-d[10];
+   int i, Nmax = d[7];
+   double x = (d[10]+d[11])/2;
+   do{
+     if(funcao(c,d[10])*funcao(c,x)<0){
+       d[11] = x;
+    }
+     else if (funcao(c,d[11])*funcao(c,x)<0){
+     d[10] = x;
+     }
+     h= d[11]-d[10];
+     x= (d[11]+d[10])/2;
+     i++;
+     if (h<d[8]|| itc_img[i]>d[9]){
+     printf("Metodo: Bissecao;\nIteracao:%i\nCONVERGIU\nRaiz final: %lf\n |a-b|:%lf\n|f(x_i)|:%lf",i,x,fabs(h),fabs(funcao(c,x)));
+     }
+     else
+     printf("Metodo: Bissecao;\nIteracao:%i\nNAO CONVERGIU\nRaiz final: %lf\n |a-b|:%lf\n|f(x_i)|:%lf",i,x,fabs(h),fabs(funcao(c,x)));
+   }while(i< Nmax || h<d[8]|| itc_img[i]>d[9]);
+
+}
+
+
+void raiz_secante(double * d, double * c, double * itc_dom, double * itc_img) {
+    double fa = funcao(c, d[10]), fb = funcao(c, d[11]);
+    itc_dom[0] = d[10];
+    itc_dom[1] = d[11];
+    itc_img[0] = fa;
+    itc_img[1] = fb;
+    int Nmax = d[7];
+    int i = 2;
+    do {
+        itc_dom[i + 1] = ((itc_dom[i - 1]) * (itc_img[i])) - (itc_dom[i] * (itc_img[i - 1])) / (itc_img[i] - itc_img[i - 1]);
+        i++;
+        if (fabs(itc_dom[i] - itc_dom[i - 1]) < d[8] && fabs(itc_img[i]) < d[9]) {
+            printf("Metodo: Secantes;\nIteração:%i\nCONVERGIU\nRaiz final: %lf\n |a-b|:%lf\n|f(x_i)|:%lf", i, itc_dom[i], fabs(itc_dom[i] - itc_dom[i - 1]), fabs(itc_img[i]));
+        } else
+            printf("Metodo: Secantes;\nIteração:%i\nNAO CONVERGIU\nRaiz final: %lf\n |a-b|:%lf\n|f(x_i)|:%lf", i, itc_dom[i], fabs(itc_dom[i] - itc_dom[i - 1]), fabs(itc_img[i]));
+
+    } while (i < Nmax || (fabs(itc_dom[i] - itc_dom[i - 1]) > d[8] && fabs(itc_img[i]) > d[9]));
+
+}
+
+int main() {
+    int M;
+    double d[11];
+    double c[6];
+    do {
+        printf("Informe:\n");
+        printf("Metodo (M): 1 - Bissecao, 2 - Secantes\n");
+        scanf("%i", & M);
+        d[0] = M;
+    } while (d[0] > 2 || d[0] < 1);
+
+    printf("Coeficiente 1 (a0)\n");
+    scanf("%lf", & d[1]);
+    printf("Coeficiente 2 (a1)\n");
+    scanf("%lf", & d[2]);
+    printf("Coeficiente 3 (a2)\n");
+    scanf("%lf", & d[3]);
+    printf("Coeficiente 4 (a3)\n");
+    scanf("%lf", & d[4]);
+    printf("Coeficiente 5 (a4)\n");
+    scanf("%lf", & d[5]);
+    printf("Coeficiente 6 (a5)\n");
+    scanf("%lf", & d[6]);
+    printf("Num. Max. de interacoes (Nmax):\n");
+    scanf("%lf", & d[7]);
+    int Nmax = d[7];
+    printf("Condicoes para que a convergencia seja alcancada:\n");
+    printf("Diferenca max. absoluta entre duas aprox. consec.: (e1)\n");
+    scanf("%lf", & d[8]);
+    printf("Valor max. absoluto da funcao f na ultima aprox.\n");
+    scanf("%lf", & d[9]);
+    printf("Intervalo:");
+    printf("Extremo a:");
+    scanf("%lf", & d[10]);
+    printf("Extremo b:");
+    scanf("%lf", & d[11]);
+    double itc_dom[Nmax], itc_img[Nmax];
+    for (int i = 1; i < 7; i++) {
+        c[i - 1] = d[1];
+    }
+    if (d[0] == 2) {
+        raiz_secante(d, c, itc_dom, itc_img);
+    }
+    else if (d[0]==1){
+        raiz_bissecao(d,c,itc_dom,itc_img);
+    }
+
+    return 0;
+}
